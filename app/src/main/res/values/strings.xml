@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">AML Notes</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="note_pad">Notepad</string>
+    <string name="note">Note</string>
+    <string name="title">Title</string>
+    <string name="note_body">Note something down</string>
+    <string name="fab">Add</string>
+    <string name="search_notes">Search Notes</string>
+    <string name="cancel">Cancel</string>
+    <string name="snooze">Snooze</string>
+    <string name="todoHint">Enter a todo task</string>
+    <string name="confirm">Confirm</string>
+    <string name="alarmTitle">Alert</string>
+    <string name="alarmContent">Your Alarm from Notes app is active</string>
+    <string name="album">Albums</string>
+    <string name="todo">To-do list</string>
+    <string name="reminder">Reminder</string>
+    <string name="camera">Take a picture</string>
+    <string name="gallery">Choose a picture from albums</string>
+</resources>
