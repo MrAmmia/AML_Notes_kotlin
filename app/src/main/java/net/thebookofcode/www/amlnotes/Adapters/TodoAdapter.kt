@@ -9,41 +9,48 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import net.thebookofcode.www.amlnotes.R
+import net.thebookofcode.www.amlnotes.databinding.TodoItemBinding
 
 class TodoAdapter : RecyclerView.Adapter<TodoAdapter.TodoHolder>() {
     private var todosArray = ArrayList<String>()
     private var boolArray = ArrayList<Int>()
     private var doneCount = 0
 
-    inner class TodoHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvTodo: TextView
-        val check: ImageView
-        val delete: ImageView
+    inner class TodoHolder(private val itemBinding: TodoItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
+
+        fun bind(position: Int)=with(itemBinding){
+            tvTodo.text = todosArray[position]
+            val status: Int = boolArray[position]
+            if (status == 0) {
+                check.setImageResource(R.drawable.ic_undone)
+                boolArray[position] = 0
+            } else if (status == 1) {
+                check.setImageResource(R.drawable.ic_done)
+                boolArray[position] = 1
+            }
+        }
 
         init {
-            tvTodo = itemView.findViewById(R.id.tvTodo)
-            check = itemView.findViewById(R.id.check)
-            delete = itemView.findViewById(R.id.delete)
 
-            check.setOnClickListener {
+            itemBinding.check.setOnClickListener {
                 val position = adapterPosition
                 if (boolArray[position] == 0) {
                     boolArray[position] = 1
-                    check.setBackgroundResource(R.drawable.ic_done)
+                    itemBinding.check.setBackgroundResource(R.drawable.ic_done)
                 } else {
                     boolArray[position] = 0
-                    check.setBackgroundResource(R.drawable.ic_undone)
+                    itemBinding.check.setBackgroundResource(R.drawable.ic_undone)
                 }
             }
 
-            delete.setOnClickListener {
+            itemBinding.delete.setOnClickListener {
                 val position = adapterPosition
                 boolArray.removeAt(position)
                 todosArray.removeAt(position)
                 notifyDataSetChanged()
             }
 
-            tvTodo.addTextChangedListener(object : TextWatcher {
+            itemBinding.tvTodo.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence,
                     start: Int,
@@ -54,9 +61,9 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.TodoHolder>() {
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     if (s.toString().isEmpty()) {
-                        delete.visibility = View.GONE
+                        itemBinding.delete.visibility = View.GONE
                     } else {
-                        delete.visibility = View.VISIBLE
+                        itemBinding.delete.visibility = View.VISIBLE
                     }
                 }
 
@@ -66,20 +73,12 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.TodoHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.todo_item, parent, false)
-        return TodoHolder(v)
+        val itemBinding = TodoItemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return TodoHolder(itemBinding)
     }
 
     override fun onBindViewHolder(holder: TodoHolder, position: Int) {
-        holder.tvTodo.text = todosArray[position]
-        val status: Int = boolArray[position]
-        if (status == 0) {
-            holder.check.setImageResource(R.drawable.ic_undone)
-            boolArray[position] = 0
-        } else if (status == 1) {
-            holder.check.setImageResource(R.drawable.ic_done)
-            boolArray[position] = 1
-        }
+        holder.bind(position)
     }
 
     override fun getItemCount(): Int {

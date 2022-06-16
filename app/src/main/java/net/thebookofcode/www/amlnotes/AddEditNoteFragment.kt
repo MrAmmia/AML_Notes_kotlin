@@ -40,12 +40,15 @@ import net.thebookofcode.www.amlnotes.Entities.Note
 import net.thebookofcode.www.amlnotes.Model.NoteViewModel
 import net.thebookofcode.www.amlnotes.Model.NoteViewModelFactory
 import net.thebookofcode.www.amlnotes.Repository.NoteRepository
+import net.thebookofcode.www.amlnotes.databinding.FragmentAddEditNoteBinding
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddEditNoteFragment : Fragment() {
+    private var _binding:FragmentAddEditNoteBinding? = null
+    private val binding get() = _binding!!
     private var REQUEST_CODE_READ_PERMISSION: Int = 1
     private var REQUEST_CODE_WRITE_PERMISSION: Int = 2
     private val args by navArgs<AddEditNoteFragmentArgs>()
@@ -64,21 +67,6 @@ class AddEditNoteFragment : Fragment() {
     private var boolArray = ArrayList<Int>()
     var isEditing = true
 
-    var imgBack: ImageView? = null
-    var imgDone: ImageView? = null
-    var llNote: LinearLayout? = null
-    var editTextTitle: EditText? = null
-    var layoutImage: RelativeLayout? = null
-    var imgNote: ImageView? = null
-    var imgDelete: ImageView? = null
-    var layoutTodo: LinearLayout? = null
-    var addTodo: LinearLayout? = null
-    var editTextContent: EditText? = null
-    var linearLayout: LinearLayout? = null
-    var llAlbum: LinearLayout? = null
-    var llTodo: LinearLayout? = null
-    var llRemind: LinearLayout? = null
-    var tvDateTime: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,46 +74,29 @@ class AddEditNoteFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_add_edit_note, container, false)
-        imgBack = view.findViewById(R.id.imgBack)
-        imgDone = view.findViewById(R.id.imgDone)
-        llNote = view.findViewById(R.id.llNote)
-        editTextTitle = view.findViewById(R.id.editTextTitle)
-        layoutImage = view.findViewById(R.id.layoutImage)
-        imgNote = view.findViewById(R.id.imgNote)
-        imgDelete = view.findViewById(R.id.imgDelete)
-        layoutTodo = view.findViewById(R.id.layoutTodo)
-        linearLayout = view.findViewById(R.id.linearLayout)
-        editTextContent = view.findViewById(R.id.editTextContent)
-        llAlbum = view.findViewById(R.id.llAlbum)
-        llTodo = view.findViewById(R.id.llTodo)
-        llRemind = view.findViewById(R.id.llRemind)
-        tvDateTime = view.findViewById(R.id.tvDateTime)
-        addTodo = view.findViewById(R.id.addTodo)
+        _binding = FragmentAddEditNoteBinding.inflate(inflater, container, false)
 
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val todoList = view.findViewById<RecyclerView>(R.id.todoList)
-        val editTextTodo = view.findViewById<EditText>(R.id.editTextTodo)
 
-        todoList.layoutManager = LinearLayoutManager(context)
-        editTextTodo.imeOptions = EditorInfo.IME_ACTION_DONE
-        todoList.setHasFixedSize(true)
+        binding.todoList.layoutManager = LinearLayoutManager(context)
+        binding.editTextTodo.imeOptions = EditorInfo.IME_ACTION_DONE
+        binding.todoList.setHasFixedSize(true)
         adapter = TodoAdapter()
-        todoList.adapter = adapter
+        binding.todoList.adapter = adapter
         if (args.currentNote != null) {
             note = args.currentNote!!
             isEditing = false
-            imgDone!!.setBackgroundResource(R.drawable.ic_delete)
-            editTextTitle!!.setText(note!!.title)
-            tvDateTime!!.text = note!!.dateTime
-            editTextContent!!.setText(note!!.content)
-            if (!note!!.imgPath.isEmpty()) {
+            binding.imgDone.setBackgroundResource(R.drawable.ic_delete)
+            binding.editTextTitle.setText(note!!.title)
+            binding.tvDateTime.text = note!!.dateTime
+            binding.editTextContent.setText(note!!.content)
+            if (note!!.imgPath.isNotEmpty()) {
                 imageUrl = note!!.imgPath
                 visibleImage(getImageFromPath(imageUrl)!!)
             }
@@ -143,25 +114,25 @@ class AddEditNoteFragment : Fragment() {
                 }
                 adapter.setTodosArray(todosArray)
                 adapter.setDoneArray(boolArray)
-                layoutTodo!!.visibility = View.VISIBLE
-                todoList.visibility = View.VISIBLE
+                binding.layoutTodo.visibility = View.VISIBLE
+                binding.todoList.visibility = View.VISIBLE
             }
         } else {
 
         }
         if (isEditing) {
-            imgDone!!.setBackgroundResource(R.drawable.ic_check)
+            binding.imgDone.setBackgroundResource(R.drawable.ic_check)
         } else {
-            imgDone!!.setBackgroundResource(R.drawable.ic_delete)
+            binding.imgDone.setBackgroundResource(R.drawable.ic_delete)
         }
 
-        linearLayout!!.setOnClickListener { editTextContent!!.hasFocus() }
+        binding.linearLayout.setOnClickListener { binding.editTextContent.hasFocus() }
 
-        imgDone!!.setOnClickListener { v: View? ->
+        binding.imgDone.setOnClickListener { v: View? ->
             if (isEditing) {
                 saveNote()
                 isEditing = false
-                imgDone!!.setBackgroundResource(R.drawable.ic_delete)
+                binding.imgDone.setBackgroundResource(R.drawable.ic_delete)
             } else {
                 // delete note
                 Thread { deleteNote(note!!) }.start()
@@ -169,17 +140,17 @@ class AddEditNoteFragment : Fragment() {
             }
         }
 
-        addTodo!!.setOnClickListener {
-            editTextTodo.visibility = View.VISIBLE
-            editTextTodo.hasFocus()
+        binding.addTodo.setOnClickListener {
+            binding.editTextTodo.visibility = View.VISIBLE
+            binding.editTextTodo.hasFocus()
         }
 
-        imgBack!!.setOnClickListener { v: View? ->
-            saveNote()
+        binding.imgBack.setOnClickListener { v: View? ->
+            //saveNote()
             requireActivity().onBackPressed()
         }
 
-        llAlbum!!.setOnClickListener { v: View? ->
+        binding.llAlbum.setOnClickListener { v: View? ->
             context?.let {
                 showBottomSheetDialog(
                     it
@@ -187,55 +158,55 @@ class AddEditNoteFragment : Fragment() {
             }
         }
 
-        llRemind!!.isEnabled = true
+        binding.llRemind.isEnabled = true
 
-        llRemind!!.setOnClickListener { v: View? ->
+        binding.llRemind.setOnClickListener { v: View? ->
             // Set Reminder
             context?.let { showAlarmPicker(it) }
         }
 
-        llNote!!.setOnClickListener { editTextContent!!.requestFocus() }
+        binding.llNote.setOnClickListener { binding.editTextContent.requestFocus() }
 
-        imgDelete!!.setOnClickListener { hideImage() }
+        binding.imgDelete.setOnClickListener { hideImage() }
 
-        llTodo!!.setOnClickListener {
-            layoutTodo!!.visibility = View.VISIBLE
-            editTextTodo.visibility = View.VISIBLE
+        binding.llTodo.setOnClickListener {
+            binding.layoutTodo.visibility = View.VISIBLE
+            binding.editTextTodo.visibility = View.VISIBLE
         }
 
-        editTextTitle!!.addTextChangedListener(object : TextWatcher {
+        binding.editTextTitle.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 isEditing = true
-                imgDone!!.setBackgroundResource(R.drawable.ic_check)
+                binding.imgDone.setBackgroundResource(R.drawable.ic_check)
             }
 
             override fun afterTextChanged(s: Editable) {}
         })
 
-        editTextContent!!.addTextChangedListener(object : TextWatcher {
+        binding.editTextContent.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 isEditing = true
-                imgDone!!.setBackgroundResource(R.drawable.ic_check)
+                binding.imgDone.setBackgroundResource(R.drawable.ic_check)
             }
 
             override fun afterTextChanged(s: Editable) {}
         })
 
-        editTextTodo.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+        binding.editTextTodo.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
             if (actionId == 6 && !v.text.toString().isEmpty()) {
                 adapter.setTodoString(v.text.toString())
                 adapter.setTodoBool(0)
-                todoList.visibility = View.VISIBLE
+                binding.todoList.visibility = View.VISIBLE
                 isEditing = true
-                imgDone!!.setBackgroundResource(R.drawable.ic_check)
+                binding.imgDone.setBackgroundResource(R.drawable.ic_check)
                 v.text = ""
                 return@OnEditorActionListener true
             } else if (actionId == KeyEvent.KEYCODE_DEL || actionId == KeyEvent.KEYCODE_FORWARD_DEL && v.text.toString()
                     .isEmpty()
             ) {
-                editTextTodo.visibility = View.GONE
+                binding.editTextTodo.visibility = View.GONE
                 return@OnEditorActionListener true
             }
             false
@@ -243,29 +214,39 @@ class AddEditNoteFragment : Fragment() {
     }
 
     private fun saveNote() {
-        var title = editTextTitle!!.text.toString()
-        val body = editTextContent!!.text.toString()
+        var title = binding.editTextTitle.text.toString()
+        val body = binding.editTextContent.text.toString()
         val dateTime = SimpleDateFormat("MMM dd,yyyy HH:mm", Locale.getDefault()).format(Date())
         var numDone = 0
         var numTotal = 0
+
+        // Checking if there's content in the note
+
         if (title.trim { it <= ' ' }.isEmpty() && body.trim { it <= ' ' }
-                .isEmpty() && imgNote!!.visibility == View.GONE && layoutTodo!!.visibility == View.GONE && reminder_date_time.trim { it <= ' ' }
+                .isEmpty() && binding.imgNote.visibility == View.GONE && binding.layoutTodo.visibility == View.GONE && reminder_date_time.trim { it <= ' ' }
                 .isEmpty()) {
-            //requireActivity().onBackPressed();
+            // No content
+            requireActivity().onBackPressed();
         } else {
-            if (title.trim { it <= ' ' }.isEmpty() && body.trim { it <= ' ' }.isEmpty()) {
-                if (imgNote!!.visibility == View.VISIBLE) {
+            // Content
+
+            // Now check Title is empty
+            if (title.trim { it <= ' ' }.isEmpty()) {
+                if (binding.imgNote.visibility == View.VISIBLE) {
                     title = "Picture List"
-                } else if (layoutTodo!!.visibility == View.VISIBLE) {
-                    if (adapter.getTodoString()?.isNotEmpty() == true) {
-                        title = "Todo List"
-                        doneString = adapter.getDoneString().toString()
-                        todo = adapter.getTodoString().toString()
-                        numDone = adapter.numDone()
-                        numTotal = adapter.itemCount
-                    }
+                } else if (binding.layoutTodo.visibility == View.VISIBLE) {
+                    title = "Todo List"
                 }
             }
+
+            // Checking if note contains to-do
+            if (adapter.getTodoString()!!.isNotEmpty()) {
+                doneString = adapter.getDoneString().toString()
+                todo = adapter.getTodoString().toString()
+                numDone = adapter.numDone()
+                numTotal = adapter.itemCount
+            }
+
             if (note != null) {
                 val id = note!!.id
                 note = Note(
@@ -297,7 +278,7 @@ class AddEditNoteFragment : Fragment() {
             }
         }
         isEditing = false
-        imgDone!!.setBackgroundResource(R.drawable.ic_delete)
+        binding.imgDone.setBackgroundResource(R.drawable.ic_delete)
     }
 
     private fun deleteNote(note: Note) {
@@ -322,7 +303,7 @@ class AddEditNoteFragment : Fragment() {
                         takePicture()
                         galleryAddPic(context, imageUrl)
                         isEditing = true
-                        imgDone!!.setBackgroundResource(R.drawable.ic_check)
+                        binding.imgDone.setBackgroundResource(R.drawable.ic_check)
                     } else {
                         askPermission(REQUEST_CODE_WRITE_PERMISSION)
                     }
@@ -331,7 +312,7 @@ class AddEditNoteFragment : Fragment() {
                     takePicture()
                     galleryAddPic(context, imageUrl)
                     isEditing = true
-                    imgDone!!.setBackgroundResource(R.drawable.ic_check)
+                    binding.imgDone.setBackgroundResource(R.drawable.ic_check)
                 }
             }
         }
@@ -344,7 +325,7 @@ class AddEditNoteFragment : Fragment() {
                 bottomSheetDialog.cancel()
                 selectImage()
                 isEditing = true
-                imgDone!!.setBackgroundResource(R.drawable.ic_check)
+                binding.imgDone.setBackgroundResource(R.drawable.ic_check)
             } else {
                 askPermission(REQUEST_CODE_READ_PERMISSION)
             }
@@ -395,7 +376,7 @@ class AddEditNoteFragment : Fragment() {
         llConfirm!!.setOnClickListener {
             startAlarm(context, c)
             isEditing = true
-            imgDone!!.setBackgroundResource(R.drawable.ic_check)
+            binding.imgDone.setBackgroundResource(R.drawable.ic_check)
             bottomSheetDialog.cancel()
             reminder_date_time =
                 SimpleDateFormat("MMM dd,yyyy HH:mm", Locale.getDefault())
@@ -543,22 +524,22 @@ class AddEditNoteFragment : Fragment() {
     }
 
     private fun visibleImage(bitmap: Bitmap) {
-        layoutImage!!.visibility = View.VISIBLE
-        imgNote!!.visibility = View.VISIBLE
-        imgDelete!!.visibility = View.VISIBLE
-        imgNote!!.setImageBitmap(bitmap)
+        binding.layoutImage.visibility = View.VISIBLE
+        binding.imgNote.visibility = View.VISIBLE
+        binding.imgDelete.visibility = View.VISIBLE
+        binding.imgNote.setImageBitmap(bitmap)
     }
 
     fun hideImage() {
-        imgNote!!.visibility = View.GONE
-        imgDelete!!.visibility = View.GONE
-        layoutImage!!.visibility = View.GONE
-        imgNote!!.setImageDrawable(null)
+        binding.imgNote.visibility = View.GONE
+        binding.imgDelete.visibility = View.GONE
+        binding.layoutImage.visibility = View.GONE
+        binding.imgNote.setImageDrawable(null)
         deleteImage(imageUrl)
         imageUrl = ""
         note!!.imgPath = ""
         isEditing = true
-        imgDone!!.setBackgroundResource(R.drawable.ic_check)
+        binding.imgDone.setBackgroundResource(R.drawable.ic_check)
     }
 
     private fun deleteImage(path: String) {
@@ -589,6 +570,11 @@ class AddEditNoteFragment : Fragment() {
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_WRITE_PERMISSION
             )
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
 

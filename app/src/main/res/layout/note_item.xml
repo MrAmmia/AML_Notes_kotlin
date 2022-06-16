@@ -26,7 +26,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvTitle"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:drawablePadding="10dp"
@@ -38,6 +39,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/tvBody"
                     android:visibility="gone"
+                    android:textSize="14sp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:drawablePadding="10dp"
@@ -47,8 +49,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/note"
+                    android:id="@+id/tvDateTime"
+                    android:layout_marginTop="4dp"
                     android:ellipsize="end"
+                    android:textSize="11sp"
                     android:maxLines="1"
                     android:drawablePadding="10dp"
                     android:singleLine="true"
@@ -65,6 +69,7 @@
                     android:layout_height="100dp"
                     android:visibility="gone"
                     android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:id="@+id/imageNote"
                     />
@@ -85,34 +90,41 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:id="@+id/reminderLayout"
+            android:layout_marginTop="4dp"
+            android:paddingHorizontal="8dp"
             android:visibility="gone">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:id="@+id/imgReminder"
                 android:src="@drawable/ic_reminder_active"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="4dp"
                 android:visibility="gone"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="11sp"
                 android:id="@+id/reminderTime" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:layout_marginTop="4dp"
             android:id="@+id/todoLayout"
             android:visibility="gone">
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:id="@+id/imgTodo"
                 android:src="@drawable/ic_todo"
                 android:layout_marginStart="4dp"/>
             <TextView
                 android:layout_width="wrap_content"
+                android:textSize="11sp"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvTodoDone"
                 android:textColor="#0696E8" />

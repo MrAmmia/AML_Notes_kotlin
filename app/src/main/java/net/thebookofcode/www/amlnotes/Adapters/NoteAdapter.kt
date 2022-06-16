@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import net.thebookofcode.www.amlnotes.Entities.Note
 import net.thebookofcode.www.amlnotes.R
+import net.thebookofcode.www.amlnotes.databinding.NoteItemBinding
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -21,39 +22,15 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
     private var mNotesFull: ArrayList<Note>? = null
     private var listener: NoteItemClickListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteAdapter.NoteViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.note_item,parent,false)
-        return NoteViewHolder(v)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
+        val itemBinding =
+            NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return NoteViewHolder(itemBinding)
     }
 
-    override fun onBindViewHolder(holder: NoteAdapter.NoteViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val currentNote = notes[position]
-        if (currentNote.title.isNotEmpty()) {
-            holder.tvTitle.visibility = View.VISIBLE
-            holder.tvTitle.text = currentNote.title
-        }
-        if (currentNote.content!!.isNotEmpty()) {
-            holder.tvBody.visibility = View.VISIBLE
-            holder.tvBody.text = currentNote.content
-        }
-        holder.tvDateTime.text = currentNote.dateTime!!
-        if (currentNote.reminderDateTime!!.isNotEmpty()) {
-            holder.reminderLayout.visibility = View.VISIBLE
-            holder.imgReminder.visibility = View.VISIBLE
-            holder.reminderTime.text = currentNote.reminderDateTime
-        }
-        if (currentNote.totalTodo != 0) {
-            val total = currentNote.totalTodo.toString()
-            val done = currentNote.doneTodo.toString()
-            holder.todoLayout.visibility = View.VISIBLE
-            holder.tvTodoDone.text = done
-            holder.tvTodoTotal.text = total
-        }
-        if (currentNote.imgPath!!.isNotEmpty()) {
-            val path: String = currentNote.imgPath!!
-            holder.imageNote.visibility = View.VISIBLE
-            holder.imageNote.setImageBitmap(getImageFromPath(path))
-        }
+        holder.bind(currentNote)
     }
 
     private fun getImageFromPath(path: String): Bitmap? {
@@ -77,7 +54,7 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
 
     fun setNotes(notes: List<Note>?) {
         this.notes = notes as ArrayList<Note>
-        mNotesFull = java.util.ArrayList(notes)
+        mNotesFull = ArrayList(notes)
         notifyDataSetChanged()
     }
 
@@ -97,32 +74,38 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
         return notes.size
     }
 
-    inner class NoteViewHolder(itemView:View) : RecyclerView.ViewHolder(itemView){
-        var tvTitle: TextView
-        var tvBody: TextView
-        var tvDateTime: TextView
-        var tvTodoDone: TextView
-        var tvTodoTotal: TextView
-        var imgReminder: ImageView
-        var imgTodo: ImageView
-        var todoLayout: LinearLayout
-        var reminderLayout: LinearLayout
-        var reminderTime: TextView
-        var imageNote: ImageView
+    inner class NoteViewHolder(private val itemBinding: NoteItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
+
+        fun bind(note: Note) = with(itemBinding) {
+            if (note.title.isNotEmpty()) {
+                tvTitle.visibility = View.VISIBLE
+                tvTitle.text = note.title
+            }
+            if (note.content.isNotEmpty()) {
+                tvBody.visibility = View.VISIBLE
+                tvBody.text = note.content
+            }
+            tvDateTime.text = note.dateTime
+            if (note.reminderDateTime.isNotEmpty()) {
+                reminderLayout.visibility = View.VISIBLE
+                imgReminder.visibility = View.VISIBLE
+                reminderTime.text = note.reminderDateTime
+            }
+            if (note.totalTodo != 0) {
+                val total = note.totalTodo.toString()
+                val done = note.doneTodo.toString()
+                todoLayout.visibility = View.VISIBLE
+                tvTodoDone.text = done
+                tvTodoTotal.text = total
+            }
+            if (note.imgPath.isNotEmpty()) {
+                val path: String = note.imgPath
+                imageNote.visibility = View.VISIBLE
+                imageNote.setImageBitmap(getImageFromPath(path))
+            }
+        }
 
         init {
-            tvTitle = itemView.findViewById(R.id.tvTitle)
-            tvBody = itemView.findViewById(R.id.tvBody)
-            tvDateTime = itemView.findViewById(R.id.note)
-            tvTodoDone = itemView.findViewById(R.id.tvTodoDone)
-            tvTodoTotal = itemView.findViewById(R.id.tvTodoTotal)
-            imgReminder = itemView.findViewById(R.id.imgReminder)
-            imgTodo = itemView.findViewById(R.id.imgTodo)
-            todoLayout = itemView.findViewById(R.id.todoLayout)
-            reminderLayout = itemView.findViewById(R.id.reminderLayout)
-            reminderTime = itemView.findViewById(R.id.reminderTime)
-            imageNote = itemView.findViewById(R.id.imageNote)
-
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -132,7 +115,7 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
         }
     }
 
-    private val mNotesFilter = object : Filter(){
+    private val mNotesFilter = object : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val filteredList = java.util.ArrayList<Note>()
             if (constraint == null || constraint.isEmpty() || constraint == "") {
