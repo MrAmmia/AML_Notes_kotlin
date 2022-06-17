@@ -1,5 +1,6 @@
 package net.thebookofcode.www.amlnotes.Adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.ThumbnailUtils
@@ -11,16 +12,21 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import net.thebookofcode.www.amlnotes.Entities.Note
-import net.thebookofcode.www.amlnotes.R
+import net.thebookofcode.www.amlnotes.NoteListFragment
 import net.thebookofcode.www.amlnotes.databinding.NoteItemBinding
 import java.io.File
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterable {
     private var notes = ArrayList<Note>()
     private var mNotesFull: ArrayList<Note>? = null
     private var listener: NoteItemClickListener? = null
+    private var longClickListener: NoteItemLongClickListener? = null
+    var isLongClickEnabled: Boolean = false
+    var isSelectAll: Boolean = false
+    private var selectedNotes = ArrayList<Note>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val itemBinding =
@@ -28,9 +34,54 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
         return NoteViewHolder(itemBinding)
     }
 
-    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: NoteViewHolder,
+        @SuppressLint("RecyclerView") position: Int
+    ) {
         val currentNote = notes[position]
+        if (isLongClickEnabled) {
+            holder.itemBinding.check.visibility = View.VISIBLE
+        } else {
+            holder.itemBinding.check.visibility = View.GONE
+        }
+        holder.itemBinding.itemLayout.setOnClickListener() {
+            if (isLongClickEnabled) {
+                if (holder.itemBinding.check.visibility == View.VISIBLE) {
+                    holder.itemBinding.check.visibility = View.GONE
+                    selectedNotes.remove(notes[position])
+                } else {
+                    holder.itemBinding.check.visibility = View.VISIBLE
+                    selectedNotes.add(notes[position])
+                }
+            } else {
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener!!.onItemClick(notes[position])
+                }
+            }
+        }
+        holder.itemBinding.itemLayout.setOnLongClickListener(object : View.OnLongClickListener {
+            override fun onLongClick(v: View?): Boolean {
+                holder.itemBinding.check.visibility = View.VISIBLE
+                isLongClickEnabled = true
+                if (longClickListener != null && position != RecyclerView.NO_POSITION) {
+                    longClickListener!!.onItemLongClick(notes[position])
+                    if (selectedNotes.contains(notes[position])) {
+
+                    }
+                    selectedNotes!!.add(notes[position])
+
+                    if (selectedNotes.size == 0) {
+                        isLongClickEnabled = false
+                    }
+                }
+                return true
+            }
+        })
         holder.bind(currentNote)
+        if (isSelectAll) {
+            holder.itemBinding.check.visibility = View.VISIBLE
+
+        }
     }
 
     private fun getImageFromPath(path: String): Bitmap? {
@@ -58,12 +109,37 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
         notifyDataSetChanged()
     }
 
-    fun getNote(position: Int): Note? {
+    fun tickAll() {
+        this.isSelectAll = true
+        selectedNotes.clear()
+        selectedNotes.addAll(notes)
+        notifyDataSetChanged()
+    }
+
+    fun unTickAll() {
+        this.isSelectAll = false
+        selectedNotes.clear()
+        notifyDataSetChanged()
+    }
+
+    fun getNote(position: Int): Note {
         return notes[position]
+    }
+
+    fun getSelectedNotes(): ArrayList<Note> {
+        return selectedNotes!!
     }
 
     interface NoteItemClickListener {
         fun onItemClick(note: Note?)
+    }
+
+    interface NoteItemLongClickListener {
+        fun onItemLongClick(note: Note?)
+    }
+
+    fun setOnLongClickListener(longClickListener: NoteItemLongClickListener) {
+        this.longClickListener = longClickListener
     }
 
     fun setOnItemClickListener(listener: NoteItemClickListener?) {
@@ -74,7 +150,8 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
         return notes.size
     }
 
-    inner class NoteViewHolder(private val itemBinding: NoteItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
+    inner class NoteViewHolder(val itemBinding: NoteItemBinding) :
+        RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(note: Note) = with(itemBinding) {
             if (note.title.isNotEmpty()) {
@@ -103,21 +180,13 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
                 imageNote.visibility = View.VISIBLE
                 imageNote.setImageBitmap(getImageFromPath(path))
             }
-        }
 
-        init {
-            itemView.setOnClickListener {
-                val position = adapterPosition
-                if (listener != null && position != RecyclerView.NO_POSITION) {
-                    listener!!.onItemClick(notes[position])
-                }
-            }
         }
     }
 
     private val mNotesFilter = object : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {
-            val filteredList = java.util.ArrayList<Note>()
+            val filteredList = ArrayList<Note>()
             if (constraint == null || constraint.isEmpty() || constraint == "") {
                 filteredList.addAll(mNotesFull!!)
             } else {
@@ -149,5 +218,11 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(), Filterab
 
     override fun getFilter(): Filter {
         return mNotesFilter
+    }
+
+    fun selectAll(): ArrayList<Note> {
+        selectedNotes!!.clear()
+        selectedNotes!!.addAll(notes)
+        return selectedNotes!!
     }
 }

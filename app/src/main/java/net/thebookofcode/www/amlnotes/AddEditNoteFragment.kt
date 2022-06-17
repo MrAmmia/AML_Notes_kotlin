@@ -30,6 +30,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,7 +54,7 @@ class AddEditNoteFragment : Fragment() {
     private var REQUEST_CODE_WRITE_PERMISSION: Int = 2
     private val args by navArgs<AddEditNoteFragmentArgs>()
     var note: Note? = null
-    val noteViewModel: NoteViewModel by viewModels {
+    val noteViewModel: NoteViewModel by activityViewModels {
         NoteViewModelFactory((activity?.application as NoteApplication).repository)
     }
     lateinit var noteRepository: NoteRepository
@@ -66,11 +67,6 @@ class AddEditNoteFragment : Fragment() {
     private var todosArray = ArrayList<String>()
     private var boolArray = ArrayList<Int>()
     var isEditing = true
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -135,7 +131,7 @@ class AddEditNoteFragment : Fragment() {
                 binding.imgDone.setBackgroundResource(R.drawable.ic_delete)
             } else {
                 // delete note
-                Thread { deleteNote(note!!) }.start()
+                noteViewModel.delete(note!!)
                 requireActivity().onBackPressed()
             }
         }

@@ -27,12 +27,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:layout_marginEnd="16dp"
             android:src="@drawable/ic_delete"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/selectAll"
             app:layout_constraintHorizontal_bias="0.962"
             app:layout_constraintStart_toEndOf="@+id/notePad"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <CheckBox
+            android:id="@+id/selectAll"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view"
@@ -57,7 +68,7 @@
             android:id="@+id/scrollView2"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="2dp"
             android:layout_marginTop="16dp"
             android:paddingTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"

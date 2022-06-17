@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Musa Abdullahi/AndroidStudioProjects/AML/NOTES/Kotlin/AML_Notes_kotlin/app/src/main/res/layout/fragment_add_edit_note.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Musa Abdullahi/AndroidStudioProjects/AML/NOTES/Kotlin/AML_Notes_kotlin/app/src/main/res/layout/fragment_note_list.xml" value="0.22" />
+        <entry key="..\:/Users/Musa Abdullahi/AndroidStudioProjects/AML/NOTES/Kotlin/AML_Notes_kotlin/app/src/main/res/layout/note_item.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Musa Abdullahi/AndroidStudioProjects/AML/NOTES/Kotlin/app/src/main/res/layout/activity_main.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Musa Abdullahi/AndroidStudioProjects/AML/NOTES/Kotlin/app/src/main/res/layout/alarm_picker_dialog.xml" value="0.2234375" />
         <entry key="..\:/Users/Musa Abdullahi/AndroidStudioProjects/AML/NOTES/Kotlin/app/src/main/res/layout/bottom_sheet_dialog_layout.xml" value="0.2234375" />
